@@ -29,6 +29,7 @@ const struct vk_device_extension_table wrapper_filter_extensions =
    .EXT_hdr_metadata = true,
    .GOOGLE_display_timing = true,
    .KHR_shared_presentable_image = true,
+   .KHR_shader_float_controls = true,
    .EXT_image_compression_control_swapchain = true,
 };
 
@@ -44,7 +45,7 @@ wrapper_filter_enabled_extensions(const struct wrapper_device *device,
       if (!device->physical->base_supported_extensions.extensions[idx])
          continue;
 
-      if (wrapper_device_extensions.extensions[idx])
+      if (wrapper_device_extensions.extensions[idx]) 
          continue;
 
       if (wrapper_filter_extensions.extensions[idx])
