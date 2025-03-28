@@ -309,6 +309,7 @@ wrapper_GetPhysicalDeviceProperties2(VkPhysicalDevice physicalDevice,
               (VkPhysicalDeviceSubgroupProperties *)prop;
          subgroup_prop->supportedOperations = 0;
          subgroup_prop->supportedStages = 0;
+         break;
       }
       default:
          break;
