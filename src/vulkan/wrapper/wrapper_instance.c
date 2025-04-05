@@ -4,14 +4,7 @@
 #include "vk_common_entrypoints.h"
 #include "vk_dispatch_table.h"
 #include "vk_extensions.h"
-
-uint64_t WRAPPER_DEBUG;
-
-static const struct debug_control debug_control[] = {
-   { "placed",       WRAPPER_MAP_MEMORY_PLACED },
-   { "bc",           WRAPPER_BC },
-   { NULL, },
-};
+#include "adrenotools/driver.h"
 
 const struct vk_instance_extension_table wrapper_instance_extensions = {
    .KHR_get_surface_capabilities2 = true,
@@ -61,12 +54,43 @@ static bool vulkan_library_init()
    if (vulkan_library_handle)
       return true;
 
-   WRAPPER_DEBUG = parse_debug_string(getenv("WRAPPER_DEBUG"),
-                                      debug_control);
+   char *hook_lib_dir = getenv("ADRENOTOOLS_HOOK_LIB_DIR");
+   char *custom_driver_dir = getenv("ADRENOTOOLS_CUSTOM_DRIVER_DIR");
+   char *custom_driver_name = getenv("ADRENOTOOLS_CUSTOM_DRIVER_NAME");
+   char *file_redirect_dir = getenv("ADRENOTOOLS_FILE_REDIRECT_DIR");
 
-   const char *env = getenv("WRAPPER_VULKAN_PATH");
-   vulkan_library_handle = dlopen(env ? env : DEFAULT_VULKAN_PATH,
-                                  RTLD_LOCAL | RTLD_NOW);
+   if (hook_lib_dir == NULL) {
+        hook_lib_dir = "/data/data/com.micewine.emu/files/usr/lib/";
+   }
+
+   if (custom_driver_dir == NULL) {
+        custom_driver_dir = "/data/data/com.micewine.emu/files/home/hook/";
+   }
+
+   char *use_adrenotools = getenv("USE_ADRENOTOOLS");
+
+   if (use_adrenotools && strcmp(use_adrenotools, "1") == 0) {
+      int adrenotools_flags = ADRENOTOOLS_DRIVER_GPU_MAPPING_IMPORT;
+
+      void *adrenotools_mapping_handle = NULL;
+
+      if (file_redirect_dir) {
+          adrenotools_flags |= ADRENOTOOLS_DRIVER_FILE_REDIRECT;
+      }
+
+      if (custom_driver_dir) {
+          adrenotools_flags |= ADRENOTOOLS_DRIVER_CUSTOM;
+      }
+
+      vulkan_library_handle = adrenotools_open_libvulkan(RTLD_NOW, adrenotools_flags, NULL, hook_lib_dir,
+                                               custom_driver_dir, custom_driver_name,
+                                               file_redirect_dir, &adrenotools_mapping_handle);
+
+   } else {
+      const char *env = getenv("WRAPPER_VULKAN_PATH");
+      vulkan_library_handle = dlopen(env ? env : DEFAULT_VULKAN_PATH,
+                                   RTLD_LOCAL | RTLD_NOW);
+   }
 
    if (vulkan_library_handle) {
       create_instance = dlsym(vulkan_library_handle, "vkCreateInstance");
