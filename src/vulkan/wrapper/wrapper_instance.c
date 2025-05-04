@@ -54,23 +54,24 @@ static bool vulkan_library_init()
    if (vulkan_library_handle)
       return true;
 
-   char *hook_lib_dir = getenv("ADRENOTOOLS_HOOK_LIB_DIR");
-   char *custom_driver_dir = getenv("ADRENOTOOLS_CUSTOM_DRIVER_DIR");
-   char *custom_driver_name = getenv("ADRENOTOOLS_CUSTOM_DRIVER_NAME");
-   char *file_redirect_dir = getenv("ADRENOTOOLS_FILE_REDIRECT_DIR");
-
-   if (hook_lib_dir == NULL) {
-        hook_lib_dir = "/data/data/com.micewine.emu/files/usr/lib/";
-   }
-
-   if (custom_driver_dir == NULL) {
-        custom_driver_dir = "/data/data/com.micewine.emu/files/home/hook/";
-   }
-
    char *use_adrenotools = getenv("USE_ADRENOTOOLS");
+   use_adrenotools = NULL;
 
    if (use_adrenotools && strcmp(use_adrenotools, "1") == 0) {
       int adrenotools_flags = ADRENOTOOLS_DRIVER_GPU_MAPPING_IMPORT;
+
+      char *hook_lib_dir = getenv("ADRENOTOOLS_HOOK_LIB_DIR");
+      char *custom_driver_dir = getenv("ADRENOTOOLS_CUSTOM_DRIVER_DIR");
+      char *custom_driver_name = getenv("ADRENOTOOLS_CUSTOM_DRIVER_NAME");
+      char *file_redirect_dir = getenv("ADRENOTOOLS_FILE_REDIRECT_DIR");
+
+      if (hook_lib_dir == NULL) {
+         hook_lib_dir = "/data/data/com.micewine.emu/files/usr/lib/";
+      }
+
+      if (custom_driver_dir == NULL) {
+         custom_driver_dir = "/data/data/com.micewine.emu/files/home/hook/";
+      }
 
       void *adrenotools_mapping_handle = NULL;
 
