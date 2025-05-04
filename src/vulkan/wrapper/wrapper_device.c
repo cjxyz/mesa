@@ -22,6 +22,8 @@ const struct vk_device_extension_table wrapper_device_extensions =
    .KHR_present_id = true,
    .KHR_present_wait = true,
    .KHR_incremental_present = true,
+   .EXT_map_memory_placed = true,
+   .KHR_map_memory2 = true,
 };
 
 const struct vk_device_extension_table wrapper_filter_extensions =
@@ -30,7 +32,6 @@ const struct vk_device_extension_table wrapper_filter_extensions =
    .GOOGLE_display_timing = true,
    .KHR_shader_float_controls = true,
    .KHR_shared_presentable_image = true,
-   .KHR_shader_float_controls = true,
    .EXT_image_compression_control_swapchain = true,
 };
 
@@ -46,7 +47,7 @@ wrapper_filter_enabled_extensions(const struct wrapper_device *device,
       if (!device->physical->base_supported_extensions.extensions[idx])
          continue;
 
-      if (wrapper_device_extensions.extensions[idx]) 
+      if (wrapper_device_extensions.extensions[idx])
          continue;
 
       if (wrapper_filter_extensions.extensions[idx])
